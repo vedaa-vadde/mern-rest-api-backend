@@ -1,17 +1,39 @@
-1.generate package.json
-2.create express server
-3.install mongoose and connect to mongoDB server
-              REST API-MongoDB native driver-DB server
-              REST API-MongoDB ODM tool->db serevr
+# MERN REST API Backend
 
-4.build USER REST API
-                 -create usser
-                 -read all users
-                 -read a user by id
-                 -update a user by id
-                 -delete a user by id
+This project is a RESTful backend API built using Node.js, Express.js, and MongoDB.
 
+## Features
+- Create user
+- Get all users
+- Get user by ID
+- Update user
+- Delete user
+- MongoDB database integration
 
-5.create schema and model of the resource(user)
+## Tech Stack
+- Node.js
+- Express.js
+- MongoDB
+- Mongoose
 
-6. define routes                 
+## Installation
+
+Clone the repository
+
+git clone https://github.com/vedaa-vadde/mern-rest-api-backend.git
+
+Install dependencies
+
+npm install
+
+Run the server
+
+npm start
+
+## API Endpoints
+
+POST /users  
+GET /users  
+GET /users/:id  
+PUT /users/:id  
+DELETE /users/:id
