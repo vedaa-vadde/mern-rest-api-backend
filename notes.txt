@@ -1,0 +1,34 @@
+tcpip and http relationship??
+backend=>http server,apis,database
+mongodb compass=datavase client
+objId:like primary key in mysql it takes care of uniqueness
+find method=all documents(nothing found then returns undefines whereas finfOne gives null)
+odm=obj documnet module
+//error=>{name,message,callStack}
+
+use findOne method to read a document with non object id fields
+use find by id to read document with object id
+
+STATUS CODES
+
+200=operation successfull
+201=created
+
+400=bad request(client send incorrect data)
+401=unauthorised
+404=not found(not available)
+ 
+500=server error
+
+TYPES OF ROUTES
+->public(by anyone)
+->protected(by authenticated users only)
+
+USER AUTHENTICATION(login)
+-submit credentials and get token
+
+//xss and csrf attack risk
+
+to access cookies property of req obj we need cookie parser middleware.
+otherwise
+req.cookies is undefined
