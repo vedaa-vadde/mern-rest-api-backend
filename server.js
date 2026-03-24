@@ -3,18 +3,20 @@ import {connect} from 'mongoose';
 import { userApp} from './APIs/UserAPI.js';
 import { productApp}from './APIs/productAPI.js';
 import cookieParser from 'cookie-parser';
+import {config} from 'dotenv'
+config(); //process.env.PORT, process.env.DB_URL
 const app=exp();
 app.use(exp.json())
 app.use(cookieParser())
 app.use("/user-api",userApp);
 app.use("/product-api",productApp);
-
+const port=process.env.PORT || 4000
 //use body parser middleware
 
 //connect to db serv+er
 async function connectToDb(){
     try{ 
-        await connect('mongodb://localhost:27017/anurag');
+        await connect(process.env.DB_URL);
         console.log('connected to db server successfully');
         
 

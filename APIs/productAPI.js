@@ -19,7 +19,7 @@ productApp.get("/products/:id",async(req,res)=>{
 const pid=req.params.id;
 const pObj=await productModel.findOne({productId:pid})
 if(!pObj){
-    return res.status(401).json({message:"product not found"})
+    return res.status(404).json({message:"product not found"})
 }
 res.status(200).json({message:"product",payload:pObj})
 })

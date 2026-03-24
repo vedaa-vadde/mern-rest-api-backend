@@ -32,3 +32,8 @@ USER AUTHENTICATION(login)
 to access cookies property of req obj we need cookie parser middleware.
 otherwise
 req.cookies is undefined
+
+cross origin vs same origin
+cross origin means when client and server applications are running in different dommains
+same orign req means the clint also is running on same origin as servercookies will send along w req automatically in same origin req. 
+but for cross origin req, the token should be explicitly included to the req

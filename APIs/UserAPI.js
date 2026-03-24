@@ -4,10 +4,12 @@ import {UserModel} from '../models/UserModels.js'
 import {hash,compare} from 'bcryptjs'
 import jwt from 'jsonwebtoken' //default export
 import {verifyToken} from '../middlewares/verifyToken.js'
-const {sign}=jwt
+
+//const {sign}=jwt
 export const userApp=exp.Router();
 
 
+const { sign } = jwt;
 //user login
 userApp.post("/auth",async(req,res)=>{
   //get user obj from client
@@ -24,7 +26,7 @@ userApp.post("/auth",async(req,res)=>{
     return res.status(400).json({message:"invalid password"})
   }
   //else create a token and send
-  const signedToken=sign({email:user.email},"abcdef",{expiresIn:"1h"})
+  const signedToken=sign({email:user.email},process.env.SECRET_KEY,{expiresIn:"1h"})
   //store token at httpOnly cookie
   res.cookie("token",signedToken,{
     httpOnly:true,
@@ -37,23 +39,22 @@ userApp.post("/auth",async(req,res)=>{
 })
 //define user rest api routes
    //create new user
-   userApp.post("/users",async(req,res)=>{
-    //get new user obj from req
-    
-    const newUser=req.body;
-    //hash the password
-    const hashedPassword=await hash(newUser.password,10)
-    //replace plain pasword with hashed password
-    newUser.password=hashedPassword;
-    //create new user doc
-    const newUserDocument=new UserModel(newUser);
-    //save
-    const result=await newUserDocument.save();
-    console.log("result:",result)
-    //send response
-    res.status(201).json({message:"user created"});
-  
-   });
+   userApp.post("/users", async (req, res) => {
+  try {
+    const newUser = req.body;
+
+    // hash password
+    const hashedPassword = await hash(newUser.password, 5);
+    newUser.password = hashedPassword;
+
+    const newUserDoc = new UserModel(newUser);
+    const result = await newUserDoc.save();
+
+    res.status(201).json({ message: "user created", payload: result });
+  } catch (err) {
+    res.status(500).json({ message: "error", error: err.message });
+  }
+});
 
  //read all users(protected route)
  userApp.get("/users",verifyToken,async(req,res)=>{
@@ -62,14 +63,17 @@ userApp.post("/auth",async(req,res)=>{
    //send res
    res.status(200).json({message:"users",payload:usersList})
  })  ;
- userApp.get("/users/:id",async(req,res)=>{
-  //read onj id from req params
-  const uid=req.params.id;
+ userApp.get("/user",verifyToken,async(req,res)=>{
+  //read user email from req
+  const emailOfUser=req.user?.email;
+
+
+ 
   //find user by id
-  const userObj=await UserModel.findOne({_id:uid})
+  const userObj=await UserModel.findOne({email:emailOfUser}).populate("cart.product")
   //if user not found
   if(!userObj){
-    return res.status(401).json({message:"user not founddd"})
+    return res.status(404).json({message:"user not founddd"})
   }
   //send res
   res.status(200).json({message:"user",payload:userObj})
@@ -80,7 +84,7 @@ userApp.post("/auth",async(req,res)=>{
 
 
  //update a user by id
- userApp.put("/users/:id",async(req,res)=>{
+ userApp.put("/users/:id",verifyToken,async(req,res)=>{
   //get modified user from req
   const modifiedUser=req.body;
   const uid=req.params.id;
@@ -91,7 +95,7 @@ userApp.post("/auth",async(req,res)=>{
  }
  )
  //delete user by id
- userApp.delete("/users/:id",async(req,res)=>{
+ userApp.delete("/users/:id",verifyToken,async(req,res)=>{
   //get id from req param
   let uid=req.params.id;
   //find & delete user by id
@@ -103,3 +107,71 @@ if(!deletedUser)
   //send res
   res.status(200).json({message:"user removed",payload:deletedUser})
  })
+ //add product to cart
+ /*
+ userApp.put("/cart/product-id/:pid",verifyToken,async(req,res)=>{
+  //get product id from url param
+  let productId=req.params.pid;
+  //GET CURRENT USER DETAILS
+  const emailOfUser=req.user?.email;
+  
+  //add product to cart
+  let result=await UserModel.findOneAndUpdate({email:emailOfUser},{$push:{cart:{product:productId}}})
+ if(!result){
+  res.status(401).json({message:"user not found"})
+ }
+res.status(200).json({message:"product added to cart"})});
+*/
+
+
+
+
+/*userApp.put("/cart/product-id/:pid",verifyToken,async(req,res)=>{
+  //get product id from url param
+  let productId=req.params.pid;
+  //GET CURRENT USER DETAILS
+  const emailOfUser=req.user?.email;
+  //before add first shld check that product is alrdy in cart if yes them increment count else add
+
+  let check=await UserModel.findOne({cart:{product:productId}})
+  if(!check){
+
+  //add product to cart
+  if(productId){
+  let result=await UserModel.findOneAndUpdate({email:emailOfUser},{$push:{cart:{product:productId}}})
+ if(!result){
+  res.status(401).json({message:"user not found"})
+ }}
+res.status(200).json({message:"product added to cart"})}
+else {
+  cart.count++;
+}});
+*/
+
+
+userApp.put("/cart/product-id/:pid", verifyToken, async (req, res) => {
+  const productId = req.params.pid;
+  const emailOfUser = req.user?.email;
+
+  // check if product already in cart
+  const user = await UserModel.findOne({
+    email: emailOfUser,
+    "cart.product": productId
+  });
+
+  if (user) {
+    // increment count
+    await UserModel.updateOne(
+      { email: emailOfUser, "cart.product": productId },
+      { $inc: { "cart.$.count": 1 } }
+    );
+    return res.status(200).json({ message: "product count increased" });
+  } else {
+    // add new product
+    await UserModel.updateOne(
+      { email: emailOfUser },
+      { $push: { cart: { product: productId, count: 1 } } }
+    );
+    return res.status(200).json({ message: "product added to cart" });
+  }
+});

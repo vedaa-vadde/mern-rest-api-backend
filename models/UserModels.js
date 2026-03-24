@@ -1,5 +1,15 @@
-import {Schema,model} from 'mongoose'
-
+import {Schema,model,Types} from 'mongoose'
+//create cart schema {product, count}
+const cartSchema=new Schema({
+    product:{
+         type:Types.ObjectId,
+         ref:"product"//name of the product model
+    },
+    count:{
+        type:Number,
+        default:1
+    }
+})
 //create user schema
 const userSchema=new Schema({
     //structure of the user resource
@@ -21,8 +31,8 @@ const userSchema=new Schema({
     },
     age:{
     type:Number
-    },
-
+    }, 
+    cart:[cartSchema]
 },
 {
     versionKey:false,

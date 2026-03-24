@@ -9,8 +9,9 @@ export function verifyToken(req,res,next){
     }
     try{
     //if token is existed
-    const decodedToken=verify(token,'abcdef')
+    const decodedToken = verify(token, process.env.SECRET_KEY);
     console.log(decodedToken);
+    req.user=decodedToken;
     //call next
     next();
 }catch(err){

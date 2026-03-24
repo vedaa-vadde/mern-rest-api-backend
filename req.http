@@ -1,11 +1,19 @@
 
 ###read all users
 GET http://localhost:4000/user-api/users
-Cookie: token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImtpcmFuQGdhbWlsLmNvbSIsImlhdCI6MTc3Mjg3Njk1OSwiZXhwIjoxNzcyODgwNTU5fQ.vNiy9xSCvUgVydHdkrs92uaRK0mlIDylyWz3giTd_Us; Path=/; HttpOnly; SameSite=Lax
+
 ###read the user by id
-GET http://localhost:4000/user-api/users/69aa65b0d50df8ada3c4a0bd
+GET http://localhost:4000/user-api/user
 
+###
+POST http://localhost:4000/user-api/users
+Content-Type: application/json
 
+{ "username":"vedaa",
+    "password":"khushal",
+    "email":"vedaa@gamil.com",
+    "age":19
+}
 
 ###
 
@@ -65,6 +73,9 @@ POST http://localhost:4000/user-api/auth
 Content-Type: application/json
 
 {
-    "email":"kiran@gamil.com",
-    "password":"kiran"
+    "email":"vedaa@gamil.com",
+    "password":"khushal"
 }
+
+###add product to user cart
+PUT http://localhost:4000/user-api/cart/product-id/69ab9c6f0ae889849c644625
